@@ -1,5 +1,8 @@
 package com.project.interviewmanagement_service.feedback.service;
 
+import com.project.interviewmanagement_service.common.exception.BusinessException;
+import com.project.interviewmanagement_service.common.exception.ResourceNotFoundException;
+import com.project.interviewmanagement_service.common.utils.ErrorCode;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackRequest;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackResponse;
 import com.project.interviewmanagement_service.feedback.entity.FeedBack;
@@ -10,9 +13,11 @@ import com.project.interviewmanagement_service.interview.repository.InterviewRep
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.repository.InterviewerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FeedBackService {
@@ -23,28 +28,50 @@ public class FeedBackService {
     private  final FeedBackMapper mapper;
 
 
+    /**
+     * Creates feedback for a given interview by a specific interviewer.
+     * Validates interview existence, interviewer existence, and ensures
+     * the interviewer is part of the interview before accepting feedback.
+     */
     @Transactional
     public FeedBackResponse createFeedBack(Long interviewId, FeedBackRequest request)
     {
-        Interview interview = interviewRepository.findById(interviewId).orElseThrow(()-> new RuntimeException("Interview not found"));
+        log.info("Creating feedback for interviewId={} by interviewerId={}",
+                interviewId, request.getInterviewerId());
+        // Validate interview existence
+        Interview interview = interviewRepository.findById(interviewId).orElseThrow(()-> {
+                log.error("Interview not found with id={}", interviewId);
+                return new ResourceNotFoundException(ErrorCode.INTERVIEW_NOT_FOUND, interviewId);});
 
-        Interviewer interviewer = interviewerRepository.findById(request.getInterviewerId()).orElseThrow(()->new RuntimeException("Interviewer not found"));
+
+        // Validate interviewer existence
+        Interviewer interviewer = interviewerRepository.findById(request.getInterviewerId()).orElseThrow(()-> {
+                log.error("Interviewer not found with id={}", request.getInterviewerId());
+                return new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND,request.getInterviewerId());});
 
 
+
+        // Ensure interviewer is assigned to this interview
         if(!interview.getInterviewers().contains(interviewer))
         {
-            throw new RuntimeException("Interviewer was not assigned to this interview");
+            log.warn("Interviewer {} is not assigned to interview {}",
+                    request.getInterviewerId(), interviewId);
+            throw new BusinessException(ErrorCode.INTERVIEWER_NOT_ASSIGNED);
         }
 
 
+        // Build and persist feedback
         FeedBack feedBack = FeedBack.builder().interview(interview)
                 .interviewer(interviewer)
                 .rating(request.getRating())
                 .comments(request.getComments())
                 .build();
 
+
         FeedBack result = feedBackRepository.save(feedBack);
 
+        log.info("Feedback created successfully with id={} for interviewId={}",
+                result.getId(), interviewId);
         return mapper.toFeedBackResponse(result);
 
 

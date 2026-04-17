@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-interviewer
+      author: balaji
+      # Creates interviewer table to store interviewer profile and expertise
+      changes:
+
+        # =========================
+        # INTERVIEWER TABLE
+        # =========================
+        - createTable:
+            tableName: interviewer
+            # Stores interviewer details participating in interviews
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  # Primary key for interviewer
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  # Full name of interviewer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expertise
+                  type: VARCHAR(255)
+                  # Area of expertise (e.g., Java, System Design, Frontend)

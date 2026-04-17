@@ -1,6 +1,8 @@
 package com.project.interviewmanagement_service.interviewer.controller;
 
 
+import com.project.interviewmanagement_service.common.dto.ApiResponse;
+import com.project.interviewmanagement_service.interviewer.dto.InterviewerResponse;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.service.InterviewerService;
 import jakarta.validation.Valid;
@@ -12,25 +14,37 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/interviewer")
+@RequestMapping("/api/v1/interviewers")
 @RequiredArgsConstructor
 public class InterviewerController {
 
     private final InterviewerService interviewerService;
 
+    /**
+     * Creates a new interviewer.
+     *
+     * @param interviewer request payload containing interviewer details
+     * @return created interviewer response
+     */
     @PostMapping
-    public ResponseEntity<Interviewer> createInterviewer(@Valid @RequestBody Interviewer interviewer)
+    public ResponseEntity<ApiResponse<InterviewerResponse>> createInterviewer(@Valid @RequestBody Interviewer interviewer)
     {
-        Interviewer result = interviewerService.createInterviewer(interviewer);
+        InterviewerResponse result = interviewerService.createInterviewer(interviewer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Interviewer created successfully", result));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+
+    /**
+     * Retrieves all interviewers.
+     *
+     * @return list of interviewer responses
+     */
     @GetMapping
-    public  ResponseEntity<List<Interviewer>> getAllInterviewer()
+    public  ResponseEntity<ApiResponse<List<InterviewerResponse>>> getAllInterviewer()
     {
-        List<Interviewer> result = interviewerService.getAllInterviewer();
-        return  ResponseEntity.status(HttpStatus.OK).body(result);
+        List<InterviewerResponse> result = interviewerService.getAllInterviewer();
+        return  ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Interviewers fetched successfully", result));
     }
 
 }

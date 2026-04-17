@@ -1,3 +1,9 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/001-init.yaml
+      file: db/changelog/001-create-candidate.yaml
+  - include:
+      file: db/changelog/004-create-interviewer.yaml
+  - include:
+      file: db/changelog/003-create-interview.yaml
+  - include:
+      file: db/changelog/002-create-feedback.yaml

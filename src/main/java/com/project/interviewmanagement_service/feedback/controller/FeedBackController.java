@@ -1,6 +1,7 @@
 package com.project.interviewmanagement_service.feedback.controller;
 
 
+import com.project.interviewmanagement_service.common.dto.ApiResponse;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackRequest;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackResponse;
 import com.project.interviewmanagement_service.feedback.entity.FeedBack;
@@ -18,12 +19,17 @@ public class FeedBackController {
 
     private final FeedBackService feedBackService;
 
+    /**
+     * Submits feedback for a specific interview by an interviewer.
+     *
+     * @param interviewId ID of the interview
+     * @param request     feedback details (rating, comments, interviewerId)
+     * @return created feedback response
+     */
     @PostMapping("/{interviewId}/feedback")
-    public ResponseEntity<FeedBackResponse> createFeedBack(@PathVariable Long interviewId, @Valid @RequestBody FeedBackRequest request)
+    public ResponseEntity<ApiResponse<FeedBackResponse>> createFeedBack(@PathVariable Long interviewId, @Valid @RequestBody FeedBackRequest request)
     {
-
         FeedBackResponse result = feedBackService.createFeedBack(interviewId, request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Feedback created successfully", result));
     }
 }

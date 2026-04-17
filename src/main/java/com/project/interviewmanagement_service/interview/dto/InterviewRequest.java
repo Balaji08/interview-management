@@ -15,11 +15,11 @@ import java.util.List;
 public class InterviewRequest {
 
     @NotNull(message="Schedule time is required")
-    @Future(message = "Interview must to scheduled in future time")
+    @Future(message = "Interview should be scheduled in future time")
     private LocalDateTime scheduledAt;
 
     @NotNull(message="Schedule time is required")
-    @Future(message = "Interview must to scheduled in future time")
+    @Future(message = "Interview should be scheduled in future time")
     private LocalDateTime endAt;
 
     @NotEmpty(message = "Aleast one Interviewer required")

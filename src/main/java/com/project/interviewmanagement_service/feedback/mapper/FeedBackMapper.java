@@ -7,15 +7,22 @@ import com.project.interviewmanagement_service.feedback.entity.FeedBackRating;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(config = CentralMapperConfig.class )
 
+/**
+ * Maps FeedBack entity to FeedBackResponse DTO.
+ * Flattens nested relationships into simple ID fields for API response.
+ */
+@Mapper(config = CentralMapperConfig.class )
 public interface FeedBackMapper {
 
+    /**
+     * Converts FeedBack entity to FeedBackResponse.
+     * - Maps interview.id → interviewId
+     * - Maps interviewer.id → interviewerId
+     */
     @Mapping(source = "interview.id", target = "interviewId")
     @Mapping(source = "interviewer.id", target = "interviewerId")
     FeedBackResponse toFeedBackResponse (FeedBack feedBack);
 
-//    default String map(FeedBackRating rating) {
-//        return rating != null ? rating.name().toLowerCase() : null;
-  //  }
+
 }

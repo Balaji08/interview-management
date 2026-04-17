@@ -18,17 +18,29 @@ public class CandidateController {
 
     private final CandidateService candidateService;
 
+    /**
+     * Creates a new candidate.
+     *
+     * @param candidate request payload containing candidate details
+     * @return created candidate response
+     */
     @PostMapping
     public ResponseEntity<ApiResponse<CandidateResponse>> createCandidate(@RequestBody @Valid Candidate candidate)
     {
         CandidateResponse response = candidateService.createCandidate(candidate);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<CandidateResponse>(true, "Candidate created successfully", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Candidate created successfully", response));
     }
 
+    /**
+     * Fetches a candidate by ID.
+     *
+     * @param id candidate identifier
+     * @return candidate response
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CandidateResponse>> getCandidateById(@PathVariable Long id)
     {
         CandidateResponse response = candidateService.getCandidateById(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<CandidateResponse>(true, "Candidate fetched successfully", response));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success( "Candidate fetched successfully", response));
     }
 }

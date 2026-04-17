@@ -1,0 +1,129 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-interview
+      author: balaji
+      # Creates interview scheduling system including interview entity
+      # and mapping table for multiple interviewers per interview
+      changes:
+
+        # =========================
+        # INTERVIEW TABLE
+        # =========================
+        - createTable:
+            tableName: interview
+            # Stores interview schedule, status, and candidate reference
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  # Primary key for interview
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: candidate_id
+                  type: BIGINT
+                  # Reference to candidate attending the interview
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  # Current interview status (SCHEDULED, COMPLETED, CANCELLED)
+
+              - column:
+                  name: scheduled_at
+                  type: TIMESTAMP
+                  # Interview start time
+
+              - column:
+                  name: end_at
+                  type: TIMESTAMP
+                  # Interview end time
+
+        # =========================
+        # FK: INTERVIEW → CANDIDATE
+        # =========================
+        - addForeignKeyConstraint:
+            baseTableName: interview
+            baseColumnNames: candidate_id
+            referencedTableName: candidate
+            referencedColumnNames: id
+            constraintName: fk_interview_candidate
+            # Ensures interview is always linked to a valid candidate
+
+        # =========================
+        # INTERVIEW_INTERVIEWER (JOIN TABLE)
+        # =========================
+        - createTable:
+            tableName: interview_interviewer
+            # Join table for many-to-many relationship between interview and interviewer
+            columns:
+
+              - column:
+                  name: interview_id
+                  type: BIGINT
+                  # Reference to interview
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interviewer_id
+                  type: BIGINT
+                  # Reference to interviewer
+                  constraints:
+                    nullable: false
+
+        # =========================
+        # FK: JOIN → INTERVIEW
+        # =========================
+        - addForeignKeyConstraint:
+            baseTableName: interview_interviewer
+            baseColumnNames: interview_id
+            referencedTableName: interview
+            referencedColumnNames: id
+            constraintName: fk_interview_interviewer_interview
+            # Ensures mapping points to valid interview
+
+        # =========================
+        # FK: JOIN → INTERVIEWER
+        # =========================
+        - addForeignKeyConstraint:
+            baseTableName: interview_interviewer
+            baseColumnNames: interviewer_id
+            referencedTableName: interviewer
+            referencedColumnNames: id
+            constraintName: fk_interview_interviewer_interviewer
+            # Ensures mapping points to valid interviewer
+
+        # =========================
+        # UNIQUE CONSTRAINT (NO DUPLICATES)
+        # =========================
+        - addUniqueConstraint:
+            tableName: interview_interviewer
+            columnNames: interview_id, interviewer_id
+            constraintName: uq_interview_interviewer
+            # Prevents duplicate interviewer assignment to same interview
+
+        # =========================
+        # INDEXES (PERFORMANCE)
+        # =========================
+        - createIndex:
+            tableName: interview
+            indexName: idx_interview_candidate
+            columns:
+              - column:
+                  name: candidate_id
+            # Optimizes candidate-based queries
+
+        - createIndex:
+            tableName: interview
+            indexName: idx_interview_schedule
+            columns:
+              - column:
+                  name: scheduled_at
+            # Optimizes time-based filtering and search

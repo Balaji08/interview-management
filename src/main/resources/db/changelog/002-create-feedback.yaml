@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-feedback
+      author: balaji
+      # Creates feedback table to store interviewer evaluations for interviews
+      changes:
+
+        - createTable:
+            tableName: feedback
+            # Stores feedback provided by interviewers for a specific interview
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  # Primary key for feedback
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: comments
+                  type: VARCHAR(500)
+                  # Optional qualitative feedback provided by interviewer
+
+              - column:
+                  name: rating
+                  type: VARCHAR(50)
+                  # Rating given by interviewer (can be enum/string like GOOD, AVERAGE, etc.)
+
+              - column:
+                  name: interview_id
+                  type: BIGINT
+                  # Reference to the interview for which feedback is given
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: interviewer_id
+                  type: BIGINT
+                  # Reference to the interviewer who submitted the feedback
+                  constraints:
+                    nullable: false
+
+        # Foreign key linking feedback to interview (ensures feedback belongs to valid interview)
+        - addForeignKeyConstraint:
+            baseTableName: feedback
+            baseColumnNames: interview_id
+            referencedTableName: interview
+            referencedColumnNames: id
+            constraintName: fk_feedback_interview
+
+        # Foreign key linking feedback to interviewer (ensures valid interviewer submits feedback)
+        - addForeignKeyConstraint:
+            baseTableName: feedback
+            baseColumnNames: interviewer_id
+            referencedTableName: interviewer
+            referencedColumnNames: id
+            constraintName: fk_feedback_interviewer

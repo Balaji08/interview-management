@@ -21,7 +21,7 @@ public class Interview {
 
 
     @ManyToMany()
-    @JoinTable(name = "interviewer_table", joinColumns = @JoinColumn(name="interview_id"),
+    @JoinTable(name = "interview_interviewer", joinColumns = @JoinColumn(name="interview_id"),
     inverseJoinColumns = @JoinColumn(name="interviewer_id"))
     private List<Interviewer> interviewers;
 

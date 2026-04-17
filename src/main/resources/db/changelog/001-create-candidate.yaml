@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-candidate
+      author: balaji
+      # This changeSet creates the candidate table used to store candidate details
+      changes:
+
+        - createTable:
+            tableName: candidate
+            # Table to store basic candidate information such as name and email
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  # Primary key for candidate table
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  # Candidate full name (mandatory field)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  # Unique email identifier for candidate (used for login/communication)
+                  constraints:
+                    nullable: false
+                    unique: true
