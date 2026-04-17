@@ -144,6 +144,8 @@ Docker support
 
 Balaji V S
 
+## Class Diagram
+
 ```mermaid
 classDiagram
 
@@ -257,4 +259,62 @@ class FeedBackRating {
   HIRE
   REJECT
 }
+```
+## Sequence Diagram
+```mermaid
+sequenceDiagram
+    actor Client
+    participant Controller as InterviewController
+    participant Service as InterviewService
+    participant CandidateRepo as CandidateRepository
+    participant InterviewerRepo as InterviewerRepository
+    participant InterviewRepo as InterviewRepository
+    participant Notification as NotificationService
+    participant Mapper as InterviewMapper
+
+    %% Request flow
+    Client->>Controller: POST /interviews (InterviewRequest)
+    Controller->>Service: createInterview(request)
+
+    %% Candidate validation
+    Service->>CandidateRepo: findById(candidateId)
+    CandidateRepo-->>Service: Candidate / NotFound
+
+    alt Candidate not found
+        Service-->>Controller: ResourceNotFoundException
+        Controller-->>Client: 404 NOT FOUND
+    end
+
+    %% Interviewer validation
+    Service->>InterviewerRepo: findAllById(interviewerIds)
+    InterviewerRepo-->>Service: List<Interviewer>
+
+    alt Interviewer missing
+        Service-->>Controller: ResourceNotFoundException
+        Controller-->>Client: 404 NOT FOUND
+    end
+
+    %% Conflict check
+    Service->>InterviewRepo: findConflictingInterviews(ids, start, end)
+    InterviewRepo-->>Service: List<Interview>
+
+    alt Conflict exists
+        Service-->>Controller: BusinessException (TIME_CONFLICT)
+        Controller-->>Client: 400 BAD REQUEST
+    end
+
+    %% Save interview
+    Service->>InterviewRepo: save(Interview)
+    InterviewRepo-->>Service: Interview
+
+    %% Notification
+    Service->>Notification: sendNotification(interview)
+
+    %% Mapping
+    Service->>Mapper: toInterviewResponse(interview)
+    Mapper-->>Service: InterviewResponse
+
+    %% Response
+    Service-->>Controller: InterviewResponse
+    Controller-->>Client: 201 CREATED
 ```
