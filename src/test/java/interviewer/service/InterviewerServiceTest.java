@@ -43,7 +43,8 @@ class InterviewerServiceTest {
                 .expertise("Java")
                 .build();
 
-        InterviewerResponse response = new InterviewerResponse();
+        InterviewerResponse response =
+                new InterviewerResponse(1L, "John", "Java");
 
         when(interviewerRepository.save(interviewer)).thenReturn(saved);
         when(interviewerMapper.toInterviewerResponse(saved)).thenReturn(response);
@@ -62,11 +63,23 @@ class InterviewerServiceTest {
     void shouldReturnAllInterviewers() {
 
         // GIVEN
-        Interviewer interviewer1 = Interviewer.builder().id(1L).build();
-        Interviewer interviewer2 = Interviewer.builder().id(2L).build();
+        Interviewer interviewer1 = Interviewer.builder()
+                .id(1L)
+                .name("John")
+                .expertise("Java")
+                .build();
 
-        InterviewerResponse response1 = new InterviewerResponse();
-        InterviewerResponse response2 = new InterviewerResponse();
+        Interviewer interviewer2 = Interviewer.builder()
+                .id(2L)
+                .name("Jane")
+                .expertise("Spring")
+                .build();
+
+        InterviewerResponse response1 =
+                new InterviewerResponse(1L, "John", "Java");
+
+        InterviewerResponse response2 =
+                new InterviewerResponse(2L, "Jane", "Spring");
 
         when(interviewerRepository.findAll())
                 .thenReturn(List.of(interviewer1, interviewer2));

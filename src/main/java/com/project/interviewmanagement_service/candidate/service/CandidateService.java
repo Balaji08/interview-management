@@ -54,4 +54,27 @@ public class CandidateService {
 
     }
 
+    /**
+     * Deletes a candidate by ID.
+     *
+     * @param id the unique identifier of the candidate
+     * @throws ResourceNotFoundException if candidate does not exist
+     */
+    public void deleteCandidate(Long id) {
+
+        log.info("Request received to delete candidate with id: {}", id);
+
+        Candidate candidate = candidateRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Delete failed. Candidate not found with id: {}", id);
+                    return new ResourceNotFoundException(
+                            ErrorCode.CANDIDATE_NOT_FOUND, id
+                    );
+                });
+
+        candidateRepository.delete(candidate);
+
+        log.info("Candidate deleted successfully with id: {}", id);
+    }
+
 }

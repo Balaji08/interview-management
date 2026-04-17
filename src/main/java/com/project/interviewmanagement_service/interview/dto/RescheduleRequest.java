@@ -1,15 +1,17 @@
 package com.project.interviewmanagement_service.interview.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
-public class RescheduleRequest {
-    @NotNull(message = "scheduledAt is required")
-    private LocalDateTime scheduledAt;
+@Schema(description = "Request to reschedule an interview")
+public record RescheduleRequest(
 
-    @NotNull(message = "endAt is required")
-    private LocalDateTime endAt;
-}
+        @NotNull(message = "scheduledAt is required")
+        LocalDateTime scheduledAt,
+
+        @NotNull(message = "endAt is required")
+        LocalDateTime endAt
+
+) {}

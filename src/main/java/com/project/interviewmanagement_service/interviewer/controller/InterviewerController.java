@@ -5,6 +5,8 @@ import com.project.interviewmanagement_service.common.dto.ApiResponse;
 import com.project.interviewmanagement_service.interviewer.dto.InterviewerResponse;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.service.InterviewerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/interviewers")
 @RequiredArgsConstructor
+@Tag(name = "Interviewer-service", description = "Interviewer management APIs")
 public class InterviewerController {
 
     private final InterviewerService interviewerService;
@@ -26,6 +29,7 @@ public class InterviewerController {
      * @param interviewer request payload containing interviewer details
      * @return created interviewer response
      */
+    @Operation(summary = "Create new interviewer")
     @PostMapping
     public ResponseEntity<ApiResponse<InterviewerResponse>> createInterviewer(@Valid @RequestBody Interviewer interviewer)
     {
@@ -40,6 +44,7 @@ public class InterviewerController {
      *
      * @return list of interviewer responses
      */
+    @Operation(summary = "Fetch all interviewers")
     @GetMapping
     public  ResponseEntity<ApiResponse<List<InterviewerResponse>>> getAllInterviewer()
     {

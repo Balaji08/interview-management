@@ -52,53 +52,53 @@ public class InterviewService {
     public InterviewResponse createInterview(InterviewRequest request)
     {
         log.info("Creating interview for candidateId={} with interviewers={} from {} to {}",
-                request.getCandidateId(),
-                request.getInterviewerIds(),
-                request.getScheduledAt(),
-                request.getEndAt());
+                request.candidateId(),
+                request.interviewerIds(),
+                request.scheduledAt(),
+                request.endAt());
 
         // Validate candidate existence
-        Candidate candidate = candidateRepository.findById(request.getCandidateId()).
-                orElseThrow(()-> new ResourceNotFoundException(ErrorCode.CANDIDATE_NOT_FOUND, request.getCandidateId()));
+        Candidate candidate = candidateRepository.findById(request.candidateId()).
+                orElseThrow(()-> new ResourceNotFoundException(ErrorCode.CANDIDATE_NOT_FOUND, request.candidateId()));
 
 
         // Fetch interviewers and ensure all requested IDs exist
-        List<Interviewer> interviewerList = interviewerRepository.findAllById(request.getInterviewerIds());
+        List<Interviewer> interviewerList = interviewerRepository.findAllById(request.interviewerIds());
 
         if(interviewerList.isEmpty())
         {
-            log.error("No interviewers found for ids={}", request.getInterviewerIds());
-            throw  new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND,request.getInterviewerIds());
+            log.error("No interviewers found for ids={}", request.interviewerIds());
+            throw  new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND,request.interviewerIds());
 
         }
 
-        if(interviewerList.size()!= request.getInterviewerIds().size())
+        if(interviewerList.size()!= request.interviewerIds().size())
         {
             log.error("Some interviewers not found. Requested={}, Found={}",
-                    request.getInterviewerIds(), interviewerList.size());
-            throw  new ResourceNotFoundException(ErrorCode.SOME_INTERVIEWER_NOT_FOUND,request.getInterviewerIds());
+                    request.interviewerIds(), interviewerList.size());
+            throw  new ResourceNotFoundException(ErrorCode.SOME_INTERVIEWER_NOT_FOUND,request.interviewerIds());
         }
 
         // Check for time conflicts (excluding cancelled interviews at DB level)
         List<Interview> conflicts = interviewRepository.findConflictingInterviews(
-                request.getInterviewerIds(),
-                request.getScheduledAt(),
-                request.getEndAt()
+                request.interviewerIds(),
+                request.scheduledAt(),
+                request.endAt()
         );
 
         if (!conflicts.isEmpty()) {
             log.warn("Interview time conflict for interviewers={} between {} and {}",
-                    request.getInterviewerIds(),
-                    request.getScheduledAt(),
-                    request.getEndAt());
+                    request.interviewerIds(),
+                    request.scheduledAt(),
+                    request.endAt());
             throw new BusinessException(ErrorCode.INTERVIEW_TIME_CONFLICT);
         }
 
 
         Interview interview = Interview.builder().candidate(candidate)
                 .interviewers(interviewerList)
-                .scheduledAt(request.getScheduledAt())
-                .endAt(request.getEndAt())
+                .scheduledAt(request.scheduledAt())
+                .endAt(request.endAt())
                 .status(InterviewStatus.SCHEDULED)
                 .build();
 
@@ -163,7 +163,7 @@ public class InterviewService {
         log.info("Updating interview status for id={} to {}", id, newStatus);
         Interview interview = interviewRepository.findById(id).orElseThrow(()->{
             log.error("Interview not found with id={}", id);
-            return new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND);
+            return new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND, id);
 
         });
 
@@ -222,7 +222,7 @@ public class InterviewService {
     public InterviewResponse rescheduleInterview(Long id, RescheduleRequest request)
     {
         log.info("Rescheduling interview id={} to newStart={} newEnd={}",
-                id, request.getScheduledAt(), request.getEndAt());
+                id, request.scheduledAt(), request.endAt());
 
 
         // Fetch interview
@@ -240,8 +240,8 @@ public class InterviewService {
             };
         }
 
-        LocalDateTime newStart = request.getScheduledAt();
-        LocalDateTime newEnd = request.getEndAt();
+        LocalDateTime newStart = request.scheduledAt();
+        LocalDateTime newEnd = request.endAt();
 
         // Validate time range
         if (!newStart.isBefore(newEnd)) {
@@ -265,8 +265,8 @@ public class InterviewService {
         // Check for conflicts
         List<Interview> conflicts = interviewRepository.findConflictingInterviews(
                 interviewerIds,
-                request.getScheduledAt(),
-                request.getEndAt()
+                request.scheduledAt(),
+                request.endAt()
         );
 
         if (!conflicts.isEmpty()) {

@@ -7,7 +7,7 @@ import org.mapstruct.MapperConfig;
  * Ensures all mappers use Spring's component model,
  * allowing them to be injected as Spring beans.
  */
-@MapperConfig(componentModel = "Spring")
+@MapperConfig(componentModel = "spring")
 public interface CentralMapperConfig {
 
 }

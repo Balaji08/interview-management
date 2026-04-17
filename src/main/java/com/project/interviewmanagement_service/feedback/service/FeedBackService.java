@@ -37,7 +37,7 @@ public class FeedBackService {
     public FeedBackResponse createFeedBack(Long interviewId, FeedBackRequest request)
     {
         log.info("Creating feedback for interviewId={} by interviewerId={}",
-                interviewId, request.getInterviewerId());
+                interviewId, request.interviewerId());
         // Validate interview existence
         Interview interview = interviewRepository.findById(interviewId).orElseThrow(()-> {
                 log.error("Interview not found with id={}", interviewId);
@@ -45,9 +45,9 @@ public class FeedBackService {
 
 
         // Validate interviewer existence
-        Interviewer interviewer = interviewerRepository.findById(request.getInterviewerId()).orElseThrow(()-> {
-                log.error("Interviewer not found with id={}", request.getInterviewerId());
-                return new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND,request.getInterviewerId());});
+        Interviewer interviewer = interviewerRepository.findById(request.interviewerId()).orElseThrow(()-> {
+                log.error("Interviewer not found with id={}", request.interviewerId());
+                return new ResourceNotFoundException(ErrorCode.INTERVIEWER_NOT_FOUND,request.interviewerId());});
 
 
 
@@ -55,7 +55,7 @@ public class FeedBackService {
         if(!interview.getInterviewers().contains(interviewer))
         {
             log.warn("Interviewer {} is not assigned to interview {}",
-                    request.getInterviewerId(), interviewId);
+                    request.interviewerId(), interviewId);
             throw new BusinessException(ErrorCode.INTERVIEWER_NOT_ASSIGNED);
         }
 
@@ -63,8 +63,8 @@ public class FeedBackService {
         // Build and persist feedback
         FeedBack feedBack = FeedBack.builder().interview(interview)
                 .interviewer(interviewer)
-                .rating(request.getRating())
-                .comments(request.getComments())
+                .rating(request.rating())
+                .comments(request.comments())
                 .build();
 
 

@@ -33,7 +33,10 @@ class CandidateServiceTest {
 
 
     /**
-     * Verifies candidate creation and mapping to response DTO.
+     * Should create a candidate successfully when:
+     * - Valid candidate entity is provided
+     * - Repository saves the entity
+     * - Mapper converts entity to response DTO
      */
     @Test
     void shouldCreateCandidateSuccessfully() {
@@ -50,7 +53,11 @@ class CandidateServiceTest {
                 .email("balaji@gmail.com")
                 .build();
 
-        CandidateResponse response = new CandidateResponse();
+        CandidateResponse response = new CandidateResponse(
+                1L,
+                "Balaji",
+                "balaji@gmail.com"
+        );
 
         when(candidateRepository.save(candidate)).thenReturn(saved);
         when(mapper.toCandidateResponse(saved)).thenReturn(response);
@@ -66,7 +73,9 @@ class CandidateServiceTest {
 
 
     /**
-     * Verifies fetching candidate by ID when present.
+     * Should return candidate when:
+     * - Candidate exists in repository
+     * - Mapper converts entity to response DTO
      */
     @Test
     void shouldReturnCandidateById() {
@@ -75,9 +84,14 @@ class CandidateServiceTest {
         Candidate candidate = Candidate.builder()
                 .id(1L)
                 .name("Balaji")
+                .email("balaji@gmail.com")
                 .build();
 
-        CandidateResponse response = new CandidateResponse();
+        CandidateResponse response = new CandidateResponse(
+                1L,
+                "Balaji",
+                "balaji@gmail.com"
+        );
 
         when(candidateRepository.findById(1L))
                 .thenReturn(Optional.of(candidate));
@@ -95,7 +109,8 @@ class CandidateServiceTest {
     }
 
     /**
-     * Verifies exception is thrown when candidate is not found.
+     * Should throw ResourceNotFoundException when:
+     * - Candidate does not exist in repository
      */
     @Test
     void shouldThrowWhenCandidateNotFound() {
@@ -108,6 +123,4 @@ class CandidateServiceTest {
         assertThrows(ResourceNotFoundException.class,
                 () -> candidateService.getCandidateById(1L));
     }
-
-
 }

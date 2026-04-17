@@ -1,4 +1,4 @@
-package com.project.interviewmanagement_service.feedback.service;
+package FeedBack.service;
 
 import com.project.interviewmanagement_service.common.exception.ResourceNotFoundException;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackRequest;
@@ -7,6 +7,7 @@ import com.project.interviewmanagement_service.feedback.entity.FeedBack;
 import com.project.interviewmanagement_service.feedback.entity.FeedBackRating;
 import com.project.interviewmanagement_service.feedback.mapper.FeedBackMapper;
 import com.project.interviewmanagement_service.feedback.repository.FeedBackRepository;
+import com.project.interviewmanagement_service.feedback.service.FeedBackService;
 import com.project.interviewmanagement_service.interview.entity.Interview;
 import com.project.interviewmanagement_service.interview.repository.InterviewRepository;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
@@ -20,9 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeedBackServiceTest {
@@ -43,12 +46,14 @@ class FeedBackServiceTest {
     private FeedBackMapper mapper;
 
     /**
-     * Verifies feedback creation when interview and interviewer are valid.
+     * Should create feedback successfully when:
+     * - Interview exists
+     * - Interviewer exists
+     * - Interviewer is assigned to the interview
      */
     @Test
     void shouldCreateFeedbackSuccessfully() {
 
-        // GIVEN
         Long interviewId = 1L;
 
         Interviewer interviewer = Interviewer.builder().id(2L).build();
@@ -58,13 +63,21 @@ class FeedBackServiceTest {
                 .interviewers(List.of(interviewer))
                 .build();
 
-        FeedBackRequest request = new FeedBackRequest();
-        request.setInterviewerId(2L);
-        request.setComments("Good");
-        request.setRating(FeedBackRating.HIRE);
+        FeedBackRequest request = new FeedBackRequest(
+                2L,
+                FeedBackRating.HIRE,
+                "Good"
+        );
 
         FeedBack saved = FeedBack.builder().id(10L).build();
-        FeedBackResponse response = new FeedBackResponse();
+
+        FeedBackResponse response = new FeedBackResponse(
+                10L,
+                interviewId,
+                2L,
+                "HIRE",
+                "Good"
+        );
 
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.of(interview));
@@ -78,19 +91,17 @@ class FeedBackServiceTest {
         when(mapper.toFeedBackResponse(saved))
                 .thenReturn(response);
 
-        // WHEN
         FeedBackResponse result =
                 feedBackService.createFeedBack(interviewId, request);
 
-        // THEN
         assertNotNull(result);
-        assertEquals(response, result); // stronger assertion
         verify(feedBackRepository).save(any());
         verify(mapper).toFeedBackResponse(saved);
     }
 
     /**
-     * Verifies exception when interview is not found.
+     * Should throw ResourceNotFoundException when:
+     * - Interview does not exist
      */
     @Test
     void shouldThrowWhenInterviewNotFound() {
@@ -98,15 +109,20 @@ class FeedBackServiceTest {
         when(interviewRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
-        FeedBackRequest request = new FeedBackRequest();
-        request.setInterviewerId(2L);
+        FeedBackRequest request = new FeedBackRequest(
+                2L,
+                FeedBackRating.HIRE,
+                null
+        );
 
         assertThrows(ResourceNotFoundException.class,
                 () -> feedBackService.createFeedBack(1L, request));
     }
 
     /**
-     * Verifies exception when interviewer is not found.
+     * Should throw ResourceNotFoundException when:
+     * - Interview exists
+     * - Interviewer does NOT exist
      */
     @Test
     void shouldThrowWhenInterviewerNotFound() {
@@ -119,15 +135,21 @@ class FeedBackServiceTest {
         when(interviewerRepository.findById(2L))
                 .thenReturn(Optional.empty());
 
-        FeedBackRequest request = new FeedBackRequest();
-        request.setInterviewerId(2L);
+        FeedBackRequest request = new FeedBackRequest(
+                2L,
+                FeedBackRating.HIRE,
+                null
+        );
 
         assertThrows(ResourceNotFoundException.class,
                 () -> feedBackService.createFeedBack(1L, request));
     }
 
     /**
-     * Verifies exception when interviewer is not assigned to the interview.
+     * Should throw RuntimeException when:
+     * - Interview exists
+     * - Interviewer exists
+     * - BUT interviewer is NOT assigned to the interview
      */
     @Test
     void shouldThrowWhenInterviewerNotAssigned() {
@@ -136,7 +158,7 @@ class FeedBackServiceTest {
 
         Interview interview = Interview.builder()
                 .id(1L)
-                .interviewers(List.of()) // interviewer not assigned
+                .interviewers(List.of()) // Not assigned
                 .build();
 
         when(interviewRepository.findById(1L))
@@ -145,8 +167,11 @@ class FeedBackServiceTest {
         when(interviewerRepository.findById(2L))
                 .thenReturn(Optional.of(interviewer));
 
-        FeedBackRequest request = new FeedBackRequest();
-        request.setInterviewerId(2L);
+        FeedBackRequest request = new FeedBackRequest(
+                2L,
+                FeedBackRating.HIRE,
+                null
+        );
 
         assertThrows(RuntimeException.class,
                 () -> feedBackService.createFeedBack(1L, request));

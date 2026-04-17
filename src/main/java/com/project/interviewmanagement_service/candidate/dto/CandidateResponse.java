@@ -1,17 +1,17 @@
 package com.project.interviewmanagement_service.candidate.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@Data
-public class CandidateResponse {
+@Schema(description = "Candidate response payload")
+public record CandidateResponse(
 
-    private  Long id;
-    private String name;
-    private String email;
-}
+        @Schema(description = "Unique identifier of the candidate", example = "1")
+        Long id,
+
+        @Schema(description = "Full name of the candidate", example = "Balaji V S")
+        String name,
+
+        @Schema(description = "Email address of the candidate", example = "balaji@example.com")
+        String email
+
+) {}

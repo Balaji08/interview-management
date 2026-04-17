@@ -1,31 +1,26 @@
 package com.project.interviewmanagement_service.interview.dto;
 
-import com.project.interviewmanagement_service.candidate.entity.Candidate;
-import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-public class InterviewRequest {
+@Schema(description = "Interview scheduling request")
+public record InterviewRequest(
 
-    @NotNull(message="Schedule time is required")
-    @Future(message = "Interview should be scheduled in future time")
-    private LocalDateTime scheduledAt;
+        @NotNull @Future
+        LocalDateTime scheduledAt,
 
-    @NotNull(message="Schedule time is required")
-    @Future(message = "Interview should be scheduled in future time")
-    private LocalDateTime endAt;
+        @NotNull @Future
+        LocalDateTime endAt,
 
-    @NotEmpty(message = "Aleast one Interviewer required")
-    private List<Long> interviewerIds;
+        @NotEmpty
+        List<Long> interviewerIds,
 
-    @NotNull(message = "candidate id required")
-    private Long candidateId;
+        @NotNull
+        Long candidateId
 
-}
+) {}

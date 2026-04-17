@@ -5,6 +5,8 @@ import com.project.interviewmanagement_service.candidate.entity.Candidate;
 import com.project.interviewmanagement_service.candidate.repository.CandidateRepository;
 import com.project.interviewmanagement_service.candidate.service.CandidateService;
 import com.project.interviewmanagement_service.common.dto.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/candidates")
 @RequiredArgsConstructor
+@Tag(name = "Candidate-service", description = "Candidate management APIs")
 public class CandidateController {
 
     private final CandidateService candidateService;
@@ -24,6 +27,7 @@ public class CandidateController {
      * @param candidate request payload containing candidate details
      * @return created candidate response
      */
+    @Operation(summary = "Create new candidate")
     @PostMapping
     public ResponseEntity<ApiResponse<CandidateResponse>> createCandidate(@RequestBody @Valid Candidate candidate)
     {
@@ -37,10 +41,25 @@ public class CandidateController {
      * @param id candidate identifier
      * @return candidate response
      */
+    @Operation(summary = "Get candidate by Id")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CandidateResponse>> getCandidateById(@PathVariable Long id)
     {
         CandidateResponse response = candidateService.getCandidateById(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success( "Candidate fetched successfully", response));
+    }
+
+    /**
+     * Delete a candidate by ID.
+     *
+     * @param id candidate identifier
+     * @return  response 204 No Content
+     */
+    @Operation(summary = "Delete candidate")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteCandidate(@PathVariable Long id)
+    {
+        candidateService.deleteCandidate(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success("Candidate deleted successfully"));
     }
 }
