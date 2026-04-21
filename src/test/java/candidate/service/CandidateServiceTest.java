@@ -1,5 +1,6 @@
 package candidate.service;
 
+import com.project.interviewmanagement_service.candidate.dto.CandidateRequest;
 import com.project.interviewmanagement_service.candidate.dto.CandidateResponse;
 import com.project.interviewmanagement_service.candidate.entity.Candidate;
 import com.project.interviewmanagement_service.candidate.mapper.CandidateResponseMapper;
@@ -46,6 +47,8 @@ class CandidateServiceTest {
                 .name("Balaji")
                 .email("balaji@gmail.com")
                 .build();
+        CandidateRequest candidateRequest =
+                new CandidateRequest("Balaji", "balaji@gmail.com");
 
         Candidate saved = Candidate.builder()
                 .id(1L)
@@ -63,7 +66,7 @@ class CandidateServiceTest {
         when(mapper.toCandidateResponse(saved)).thenReturn(response);
 
         // WHEN
-        CandidateResponse result = candidateService.createCandidate(candidate);
+        CandidateResponse result = candidateService.createCandidate(candidateRequest);
 
         // THEN
         assertNotNull(result);

@@ -1,4 +1,5 @@
 package interviewer.service;
+import com.project.interviewmanagement_service.interviewer.dto.InterviewerRequest;
 import com.project.interviewmanagement_service.interviewer.dto.InterviewerResponse;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.mapper.InterviewerMapper;
@@ -37,6 +38,9 @@ class InterviewerServiceTest {
                 .expertise("Java")
                 .build();
 
+        InterviewerRequest request =
+                new InterviewerRequest("John", "Java");
+
         Interviewer saved = Interviewer.builder()
                 .id(1L)
                 .name("John")
@@ -51,7 +55,7 @@ class InterviewerServiceTest {
 
         // WHEN
         InterviewerResponse result =
-                interviewerService.createInterviewer(interviewer);
+                interviewerService.createInterviewer(request);
 
         // THEN
         assertNotNull(result);
@@ -92,7 +96,7 @@ class InterviewerServiceTest {
 
         // WHEN
         List<InterviewerResponse> result =
-                interviewerService.getAllInterviewer();
+                interviewerService.getAllInterviewer("");
 
         // THEN
         assertEquals(2, result.size());
@@ -107,7 +111,7 @@ class InterviewerServiceTest {
                 .thenReturn(List.of());
 
         List<InterviewerResponse> result =
-                interviewerService.getAllInterviewer();
+                interviewerService.getAllInterviewer("");
 
         assertNotNull(result);
         assertTrue(result.isEmpty());

@@ -20,6 +20,5 @@ public class Candidate {
     private String name;
 
     @Column(unique = true)
-    @Email(message = "Please provide valid email")
     private String email;
 }

@@ -1,5 +1,6 @@
 package com.project.interviewmanagement_service.candidate.service;
 
+import com.project.interviewmanagement_service.candidate.dto.CandidateRequest;
 import com.project.interviewmanagement_service.candidate.dto.CandidateResponse;
 import com.project.interviewmanagement_service.candidate.entity.Candidate;
 import com.project.interviewmanagement_service.candidate.mapper.CandidateResponseMapper;
@@ -25,9 +26,10 @@ public class CandidateService {
      * @return CandidateResponse mapped DTO
      */
 
-    public CandidateResponse createCandidate(Candidate candidate)
+    public CandidateResponse createCandidate(CandidateRequest candidate)
     {
-        Candidate savedCandidate = candidateRepository.save(candidate);
+
+        Candidate savedCandidate = candidateRepository.save(mapper.toCandidateEntity(candidate));
         log.debug("Candidate created successfully with ID: {}", savedCandidate.getId());
 
         // map to response DTO

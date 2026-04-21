@@ -1,10 +1,7 @@
 package com.project.interviewmanagement_service.feedback.controller;
-
-
 import com.project.interviewmanagement_service.common.dto.ApiResponse;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackRequest;
 import com.project.interviewmanagement_service.feedback.dto.FeedBackResponse;
-import com.project.interviewmanagement_service.feedback.entity.FeedBack;
 import com.project.interviewmanagement_service.feedback.service.FeedBackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

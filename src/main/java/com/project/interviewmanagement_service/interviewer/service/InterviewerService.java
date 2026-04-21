@@ -1,5 +1,6 @@
 package com.project.interviewmanagement_service.interviewer.service;
 
+import com.project.interviewmanagement_service.interviewer.dto.InterviewerRequest;
 import com.project.interviewmanagement_service.interviewer.dto.InterviewerResponse;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.mapper.InterviewerMapper;
@@ -21,19 +22,32 @@ public class InterviewerService {
     /**
      * Creates a new interviewer and returns the mapped response DTO.
      */
-    public InterviewerResponse createInterviewer(Interviewer interviewer)
+    public InterviewerResponse createInterviewer(InterviewerRequest interviewerRequest)
     {
         // Persist interviewer and convert to response DTO
+        Interviewer interviewer= interviewerMapper.toInterviewerEntity(interviewerRequest);
         return interviewerMapper.toInterviewerResponse(interviewerRepository.save(interviewer));
     }
 
     /**
      * Retrieves all interviewers and maps them to response DTOs.
      */
-    public List<InterviewerResponse> getAllInterviewer()
+    public List<InterviewerResponse> getAllInterviewer(String expertise)
     {
         // Fetch all interviewers and map each entity to response DTO
-        return interviewerRepository.findAll().stream().map(interviewerMapper::toInterviewerResponse).toList();
+
+        List<Interviewer> interviewers;
+        // Filter based on expertise
+        if (expertise != null && !expertise.isBlank()) {
+            interviewers = interviewerRepository
+                    .findByExpertiseContainingIgnoreCase(expertise);
+        } else {
+            interviewers = interviewerRepository.findAll();
+        }
+
+        return interviewers.stream()
+                .map(interviewerMapper::toInterviewerResponse)
+                .toList();
     }
 
 }

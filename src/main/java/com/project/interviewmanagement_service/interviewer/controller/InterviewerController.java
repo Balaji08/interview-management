@@ -2,6 +2,7 @@ package com.project.interviewmanagement_service.interviewer.controller;
 
 
 import com.project.interviewmanagement_service.common.dto.ApiResponse;
+import com.project.interviewmanagement_service.interviewer.dto.InterviewerRequest;
 import com.project.interviewmanagement_service.interviewer.dto.InterviewerResponse;
 import com.project.interviewmanagement_service.interviewer.entity.Interviewer;
 import com.project.interviewmanagement_service.interviewer.service.InterviewerService;
@@ -31,7 +32,7 @@ public class InterviewerController {
      */
     @Operation(summary = "Create new interviewer")
     @PostMapping
-    public ResponseEntity<ApiResponse<InterviewerResponse>> createInterviewer(@Valid @RequestBody Interviewer interviewer)
+    public ResponseEntity<ApiResponse<InterviewerResponse>> createInterviewer(@Valid @RequestBody InterviewerRequest interviewer)
     {
         InterviewerResponse result = interviewerService.createInterviewer(interviewer);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Interviewer created successfully", result));
@@ -46,9 +47,9 @@ public class InterviewerController {
      */
     @Operation(summary = "Fetch all interviewers")
     @GetMapping
-    public  ResponseEntity<ApiResponse<List<InterviewerResponse>>> getAllInterviewer()
+    public  ResponseEntity<ApiResponse<List<InterviewerResponse>>> getAllInterviewer(@RequestParam(required = false) String expertise)
     {
-        List<InterviewerResponse> result = interviewerService.getAllInterviewer();
+        List<InterviewerResponse> result = interviewerService.getAllInterviewer(expertise);
         return  ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Interviewers fetched successfully", result));
     }
 
