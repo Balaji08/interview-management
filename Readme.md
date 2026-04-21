@@ -14,6 +14,7 @@ A **Spring Boot 3.5 + Java 21** based backend application to manage interviews, 
 ## 👨‍💼 Interviewer Management
 - Create interviewer
 - Get all interviewers
+- Get all interviewer by expertise
 
 ## 📅 Interview Management
 - Schedule interview
